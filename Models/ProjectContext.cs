@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace Coursework.Models
 {
-    public class ProjectContext : DbContext
+    public class ProjectContext : IdentityDbContext<IdentityUser>
     {
         public ProjectContext(DbContextOptions<ProjectContext> options) : base(options)
         {
