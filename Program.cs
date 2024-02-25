@@ -1,5 +1,6 @@
 using Coursework.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<ProjectContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Connection")));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<ProjectContext>().AddDefaultTokenProviders();
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<EmailService>();
 
 var app = builder.Build();
 
