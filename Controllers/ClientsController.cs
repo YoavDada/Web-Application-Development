@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Coursework.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Coursework.Controllers
 {
@@ -31,45 +32,54 @@ namespace Coursework.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Client>> GetClient(int id)
         {
-            var client = await _context.Clients.FindAsync(id);
-
-            if (client == null)
+            try
             {
-                return NotFound();
-            }
+                var client = await _context.Clients.FindAsync(id);
 
-            return client;
+                if (client == null)
+                {
+                    return NotFound(); // Client not found
+                }
+
+                return client;
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, "Internal Server Error"); // Return a generic error message to the client
+            }
         }
 
         // PUT: api/Clients/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutClient(int id, Client client)
         {
             if (id != client.ClientId)
             {
-                return BadRequest();
+                return BadRequest("Mismatched client IDs in the request."); // Bad Request due to mismatched IDs
             }
-
-            _context.Entry(client).State = EntityState.Modified;
 
             try
             {
+                _context.Entry(client).State = EntityState.Modified;
+
                 await _context.SaveChangesAsync();
+
+                return NoContent(); // Successfully updated
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!ClientExists(id))
                 {
-                    return NotFound();
+                    return NotFound(); // Client not found
                 }
                 else
                 {
-                    throw;
+                    return StatusCode(500, "Internal Server Error"); 
                 }
             }
-
-            return NoContent();
         }
 
         // POST: api/Clients
