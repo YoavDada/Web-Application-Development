@@ -3,6 +3,7 @@ using System;
 using Coursework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Coursework.Migrations
 {
     [DbContext(typeof(ProjectContext))]
-    partial class ProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20240223114155_IdentityAdded")]
+    partial class IdentityAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
@@ -47,7 +50,6 @@ namespace Coursework.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Location")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("DepartmentId");
@@ -61,7 +63,7 @@ namespace Coursework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("DepartmentId")
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -84,11 +86,10 @@ namespace Coursework.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ExpenseDate")
-                        .IsRequired()
+                    b.Property<DateTime>("ExpenseDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ProjectId")
+                    b.Property<int>("ProjectId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("ExpenseId");
@@ -104,28 +105,27 @@ namespace Coursework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ClientId")
+                    b.Property<int>("ClientId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ClientName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("EndDate")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("ManagerEmployeeId")
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("ManagerEmployeeId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ProjectManagerId")
+                    b.Property<int>("ProjectManagerId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ProjectName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("StartDate")
-                        .IsRequired()
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("TEXT");
 
                     b.HasKey("ProjectId");
@@ -333,7 +333,9 @@ namespace Coursework.Migrations
                 {
                     b.HasOne("Coursework.Models.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Department");
                 });
@@ -342,7 +344,9 @@ namespace Coursework.Migrations
                 {
                     b.HasOne("Coursework.Models.Project", "Project")
                         .WithMany()
-                        .HasForeignKey("ProjectId");
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Project");
                 });
@@ -351,11 +355,15 @@ namespace Coursework.Migrations
                 {
                     b.HasOne("Coursework.Models.Client", "Client")
                         .WithMany()
-                        .HasForeignKey("ClientId");
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Coursework.Models.Employee", "Manager")
                         .WithMany()
-                        .HasForeignKey("ManagerEmployeeId");
+                        .HasForeignKey("ManagerEmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Client");
 

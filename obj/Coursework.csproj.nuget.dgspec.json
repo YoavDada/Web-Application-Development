@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/yoavdaian/Desktop/Courseworks/Web_Application_Development/Coursework/Coursework.csproj": {}
+    "/Users/yoavdaian/Desktop/Courseworks/untitled folder/Web_Application_Development/Web-Application-Development/Coursework.csproj": {}
   },
   "projects": {
-    "/Users/yoavdaian/Desktop/Courseworks/Web_Application_Development/Coursework/Coursework.csproj": {
+    "/Users/yoavdaian/Desktop/Courseworks/untitled folder/Web_Application_Development/Web-Application-Development/Coursework.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/yoavdaian/Desktop/Courseworks/Web_Application_Development/Coursework/Coursework.csproj",
+        "projectUniqueName": "/Users/yoavdaian/Desktop/Courseworks/untitled folder/Web_Application_Development/Web-Application-Development/Coursework.csproj",
         "projectName": "Coursework",
-        "projectPath": "/Users/yoavdaian/Desktop/Courseworks/Web_Application_Development/Coursework/Coursework.csproj",
+        "projectPath": "/Users/yoavdaian/Desktop/Courseworks/untitled folder/Web_Application_Development/Web-Application-Development/Coursework.csproj",
         "packagesPath": "/Users/yoavdaian/.nuget/packages/",
-        "outputPath": "/Users/yoavdaian/Desktop/Courseworks/Web_Application_Development/Coursework/obj/",
+        "outputPath": "/Users/yoavdaian/Desktop/Courseworks/untitled folder/Web_Application_Development/Web-Application-Development/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/yoavdaian/.nuget/NuGet/NuGet.Config"
@@ -43,6 +43,18 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "MailKit": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.2, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.2, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.2, )"

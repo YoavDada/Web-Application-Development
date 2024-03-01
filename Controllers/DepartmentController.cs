@@ -48,7 +48,7 @@ namespace Coursework.Controllers
         {
             if (id != department.DepartmentId)
             {
-                return BadRequest();
+                return BadRequest("Mismatched department IDs in the request."); // Bad Request due to mismatched IDs
             }
 
             _context.Entry(department).State = EntityState.Modified;
@@ -56,22 +56,20 @@ namespace Coursework.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                return NoContent(); // Successfully updated
             }
             catch (DbUpdateConcurrencyException)
             {
                 if (!DepartmentExists(id))
                 {
-                    return NotFound();
+                    return NotFound(); // Department not found
                 }
                 else
                 {
-                    throw;
+                    throw; // Rethrow the exception for unexpected concurrency issues
                 }
             }
-
-            return NoContent();
         }
-
         // POST: api/Department
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -90,13 +88,13 @@ namespace Coursework.Controllers
             var department = await _context.Departments.FindAsync(id);
             if (department == null)
             {
-                return NotFound();
+                return NotFound("Department not found");
             }
 
             _context.Departments.Remove(department);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok("Department deleted successfully.");
         }
 
         private bool DepartmentExists(int id)

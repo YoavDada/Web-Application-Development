@@ -6,13 +6,13 @@ namespace Coursework.Models
     {
         public int ProjectId {get; set;}
         public string ProjectName {get; set;}
-        public DateTime StartDate {get; set;}
-        public DateTime EndDate {get; set;}
-        public int ProjectManagerId {get; set;}
-        public string ClientName {get; set;}
+        public string StartDate {get; set;}
+        public string EndDate {get; set;}
+        public int? ProjectManagerId {get; set;}
+        public string? ClientName {get; set;}
 
-        public Employee Manager {get; set;}
-        public Client Client {get; set;}
+        public Employee? Manager {get; set;}
+        public Client? Client {get; set;}
 
     }
 }

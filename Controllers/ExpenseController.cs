@@ -90,13 +90,13 @@ namespace Coursework.Controllers
             var expense = await _context.Expenses.FindAsync(id);
             if (expense == null)
             {
-                return NotFound();
+                return NotFound("Expense not found");
             }
 
             _context.Expenses.Remove(expense);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok("Expense deleted successfully.");
         }
 
         private bool ExpenseExists(int id)

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Coursework.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Coursework.Controllers
 {
@@ -43,6 +44,7 @@ namespace Coursework.Controllers
 
         // PUT: api/Employee/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployee(int id, Employee employee)
         {
@@ -74,6 +76,7 @@ namespace Coursework.Controllers
 
         // POST: api/Employee
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
         {
@@ -84,19 +87,20 @@ namespace Coursework.Controllers
         }
 
         // DELETE: api/Employee/5
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
             if (employee == null)
             {
-                return NotFound();
+                return NotFound("Employee not found");
             }
 
             _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok("Employee deleted successfully.");
         }
 
         private bool EmployeeExists(int id)

@@ -3,6 +3,7 @@ using System;
 using Coursework.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Coursework.Migrations
 {
     [DbContext(typeof(ProjectContext))]
-    partial class ProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20240228154513_TestMigration1")]
+    partial class TestMigration1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
@@ -61,7 +64,7 @@ namespace Coursework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("DepartmentId")
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -108,6 +111,7 @@ namespace Coursework.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ClientName")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EndDate")
@@ -117,7 +121,7 @@ namespace Coursework.Migrations
                     b.Property<int?>("ManagerEmployeeId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("ProjectManagerId")
+                    b.Property<int>("ProjectManagerId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ProjectName")
@@ -333,7 +337,9 @@ namespace Coursework.Migrations
                 {
                     b.HasOne("Coursework.Models.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("DepartmentId");
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Department");
                 });
