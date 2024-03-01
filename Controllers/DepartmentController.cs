@@ -88,13 +88,13 @@ namespace Coursework.Controllers
             var department = await _context.Departments.FindAsync(id);
             if (department == null)
             {
-                return NotFound();
+                return NotFound("Department not found");
             }
 
             _context.Departments.Remove(department);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok("Department deleted successfully.");
         }
 
         private bool DepartmentExists(int id)

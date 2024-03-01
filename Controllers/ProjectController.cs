@@ -90,13 +90,13 @@ namespace Coursework.Controllers
             var project = await _context.Projects.FindAsync(id);
             if (project == null)
             {
-                return NotFound();
+                return NotFound("Project not found");
             }
 
             _context.Projects.Remove(project);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok("Project deleted successfully.");
         }
 
         private bool ProjectExists(int id)

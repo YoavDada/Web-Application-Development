@@ -12,6 +12,7 @@ namespace Coursework.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin")]
     public class ClientsController : ControllerBase
     {
         private readonly ProjectContext _context;
@@ -52,7 +53,7 @@ namespace Coursework.Controllers
 
         // PUT: api/Clients/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize(Roles = "Admin")]
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutClient(int id, Client client)
         {
@@ -100,13 +101,13 @@ namespace Coursework.Controllers
             var client = await _context.Clients.FindAsync(id);
             if (client == null)
             {
-                return NotFound();
+                return NotFound("Client not found.");
             }
 
             _context.Clients.Remove(client);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok("Client deleted successfully.");
         }
 
         private bool ClientExists(int id)

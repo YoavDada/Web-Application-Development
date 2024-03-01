@@ -94,13 +94,13 @@ namespace Coursework.Controllers
             var employee = await _context.Employees.FindAsync(id);
             if (employee == null)
             {
-                return NotFound();
+                return NotFound("Employee not found");
             }
 
             _context.Employees.Remove(employee);
             await _context.SaveChangesAsync();
 
-            return NoContent();
+            return Ok("Employee deleted successfully.");
         }
 
         private bool EmployeeExists(int id)

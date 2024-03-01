@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 
-namespace IdentityPractice.Controllers
+namespace Coursework.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -39,7 +39,6 @@ namespace IdentityPractice.Controllers
         }
 
         
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateRole([FromBody] string roleName)
         {
@@ -54,7 +53,6 @@ namespace IdentityPractice.Controllers
             return BadRequest(result.Errors);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> UpdateRole([FromBody] UpdateRoleModel model)
         {
@@ -76,7 +74,6 @@ namespace IdentityPractice.Controllers
             return BadRequest(result.Errors);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<IActionResult> DeleteRole(string roleId)
         {
@@ -97,7 +94,6 @@ namespace IdentityPractice.Controllers
             return BadRequest(result.Errors);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPost("assign-role-to-user")]
         public async Task<IActionResult> AssignRoleToUser([FromBody] AssignRoleModel model)
         {

@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace IdentityPractice.Controllers
+namespace Coursework.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -15,11 +15,13 @@ namespace IdentityPractice.Controllers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly EmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, EmailService emailService, IConfiguration configuration)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager, EmailService emailService, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
             _emailService = emailService;
             _configuration = configuration;
         }
@@ -42,13 +44,25 @@ namespace IdentityPractice.Controllers
                 var emailSubject = "Email Verification";
                 var emailBody = $"Please verify your email by clicking the following link: {verificationLink}";
                 _emailService.SendEmail(user.Email, emailSubject, emailBody);
-               
+
+                // Check if "Admin" role exists
+                var adminRole = await _roleManager.FindByNameAsync("Admin");
+
+                if (adminRole == null)
+                {
+                    // Create the "Admin" role if it doesn't exist
+                    adminRole = new IdentityRole("Admin");
+                    await _roleManager.CreateAsync(adminRole);
+                }
+
+                // Add the user to the "Admin" role
+                await _userManager.AddToRoleAsync(user, "Admin");
+
                 return Ok("User registered successfully. An email verification link has been sent.");
             }
 
             return BadRequest(result.Errors);
         }
-
 
         // Add an action to handle email verification
         [HttpGet("verify-email")]
@@ -83,7 +97,7 @@ namespace IdentityPractice.Controllers
                 var user = await _userManager.FindByEmailAsync(model.Email);
                 var roles = await _userManager.GetRolesAsync(user);
                 var token = GenerateJwtToken(user,roles);
-                return Ok(new { Token = token });
+                return Ok(new { Message = "Login successful.", Token = token });//Print success message and token if the login was successful
             }
 
             return Unauthorized("Invalid login attempt.");
@@ -124,6 +138,42 @@ namespace IdentityPractice.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        [HttpDelete("delete-account")]
+        public async Task<IActionResult> DeleteAccount(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Get roles of the user
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var result = await _userManager.DeleteAsync(user);
+
+            if (result.Succeeded)
+            {
+                // Sign out the user if they were signed in
+                await _signInManager.SignOutAsync();
+
+                // Remove roles associated with the user
+                foreach (var role in userRoles)
+                {
+                    var roleResult = await _userManager.RemoveFromRoleAsync(user, role);
+                    if (!roleResult.Succeeded)
+                    {
+                        // Handle the case where removing a role fails
+                        return BadRequest($"Failed to remove user from role '{role}'.");
+                    }
+                }
+
+                return Ok("Account and associated roles deleted successfully.");
+            }
+
+            return BadRequest("Failed to delete account.");
+        }
     }
 
 }
