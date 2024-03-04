@@ -16,52 +16,65 @@ namespace Coursework.Controllers
         private readonly EmailService _emailService;
         private readonly IConfiguration _configuration;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<AccountController> _logger;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager, EmailService emailService, IConfiguration configuration)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, RoleManager<IdentityRole> roleManager, ILogger<AccountController> logger, EmailService emailService, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _emailService = emailService;
             _configuration = configuration;
+            _logger = logger;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register(AuthModel model)
         {
-            var user = new IdentityUser { UserName = model.Email, Email = model.Email };
-            var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
+            try
             {
-                // Generate an email verification token
-                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                // Create the verification link
-                var verificationLink = Url.Action("VerifyEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
+            
+                var user = new IdentityUser { UserName = model.Email, Email = model.Email };
+                var result = await _userManager.CreateAsync(user, model.Password);
 
-                // Send the verification email
-                var emailSubject = "Email Verification";
-                var emailBody = $"Please verify your email by clicking the following link: {verificationLink}";
-                _emailService.SendEmail(user.Email, emailSubject, emailBody);
-
-                // Check if "Admin" role exists
-                var adminRole = await _roleManager.FindByNameAsync("Admin");
-
-                if (adminRole == null)
+                if (result.Succeeded)
                 {
-                    // Create the "Admin" role if it doesn't exist
-                    adminRole = new IdentityRole("Admin");
-                    await _roleManager.CreateAsync(adminRole);
+                    // Generate an email verification token
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    // Create the verification link
+                    var verificationLink = Url.Action("VerifyEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
+
+                    // Send the verification email
+                    var emailSubject = "Email Verification";
+                    var emailBody = $"Please verify your email by clicking the following link: {verificationLink}";
+                    _emailService.SendEmail(user.Email, emailSubject, emailBody);
+
+                    // Check if "Admin" role exists
+                    var adminRole = await _roleManager.FindByNameAsync("Admin");
+
+                    if (adminRole == null)
+                    {
+                        // Create the "Admin" role if it doesn't exist
+                        adminRole = new IdentityRole("Admin");
+                        await _roleManager.CreateAsync(adminRole);
+                    }
+
+                    // Add the user to the "Admin" role
+                    await _userManager.AddToRoleAsync(user, "Admin");
+
+                    _logger.LogInformation($"User {model.Email} registered successfully");
+                    return Ok("Registration successful.");
                 }
 
-                // Add the user to the "Admin" role
-                await _userManager.AddToRoleAsync(user, "Admin");
-
-                return Ok("User registered successfully. An email verification link has been sent.");
+                return BadRequest(result.Errors);
             }
-
-            return BadRequest(result.Errors);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred during registration for user {model.Email}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
         // Add an action to handle email verification
@@ -90,17 +103,28 @@ namespace Coursework.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(AuthModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
-
-            if (result.Succeeded)
+            try
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                var roles = await _userManager.GetRolesAsync(user);
-                var token = GenerateJwtToken(user,roles);
-                return Ok(new { Message = "Login successful.", Token = token });//Print success message and token if the login was successful
-            }
 
-            return Unauthorized("Invalid login attempt.");
+            
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var token = GenerateJwtToken(user,roles);
+                    _logger.LogInformation($"User {model.Email} logged in successfully");
+                    return Ok(new { Message = "Login successful.", Token = token });//Print success message and token if the login was successful
+                }
+
+                return Unauthorized("Invalid login attempt.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred during login for user {model.Email}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
 
         [HttpPost("logout")]
@@ -141,38 +165,52 @@ namespace Coursework.Controllers
         [HttpDelete("delete-account")]
         public async Task<IActionResult> DeleteAccount(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-
-            if (user == null)
+            try
             {
-                return NotFound("User not found.");
-            }
 
-            // Get roles of the user
-            var userRoles = await _userManager.GetRolesAsync(user);
+            
+                var user = await _userManager.FindByEmailAsync(email);
 
-            var result = await _userManager.DeleteAsync(user);
-
-            if (result.Succeeded)
-            {
-                // Sign out the user if they were signed in
-                await _signInManager.SignOutAsync();
-
-                // Remove roles associated with the user
-                foreach (var role in userRoles)
+                if (user == null)
                 {
-                    var roleResult = await _userManager.RemoveFromRoleAsync(user, role);
-                    if (!roleResult.Succeeded)
-                    {
-                        // Handle the case where removing a role fails
-                        return BadRequest($"Failed to remove user from role '{role}'.");
-                    }
+                    _logger.LogWarning($"User with email {email} not found for deletion");
+                    return NotFound("User not found.");
                 }
 
-                return Ok("Account and associated roles deleted successfully.");
-            }
+                // Get roles of the user
+                var userRoles = await _userManager.GetRolesAsync(user);
 
-            return BadRequest("Failed to delete account.");
+                var result = await _userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                {
+                    // Sign out the user if they were signed in
+                    await _signInManager.SignOutAsync();
+
+                    // Remove roles associated with the user
+                    foreach (var role in userRoles)
+                    {
+                        var roleResult = await _userManager.RemoveFromRoleAsync(user, role);
+                        if (!roleResult.Succeeded)
+                        {
+                            // Handle the case where removing a role fails
+                            return BadRequest($"Failed to remove user from role '{role}'.");
+                        }
+                    }
+
+                    _logger.LogInformation($"Account for user {email} deleted successfully.");
+                    return Ok("Account and associated roles deleted successfully.");
+                }
+
+                _logger.LogError($"Failed to delete account for user {email}");
+                return BadRequest("Failed to delete account.");
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"An error occurred during account deletion for user {email}");
+                return StatusCode(500, "Internal Server Error");
+            }
         }
     }
 
