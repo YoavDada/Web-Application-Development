@@ -42,7 +42,6 @@ namespace Coursework.Controllers
         }
 
         // PUT: api/Department/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDepartment(int id, Department department)
         {
@@ -71,7 +70,6 @@ namespace Coursework.Controllers
             }
         }
         // POST: api/Department
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Department>> PostDepartment(Department department)
         {

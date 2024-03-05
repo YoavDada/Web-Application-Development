@@ -42,7 +42,6 @@ namespace Coursework.Controllers
         }
 
         // PUT: api/Expense/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutExpense(int id, Expense expense)
         {
@@ -73,7 +72,6 @@ namespace Coursework.Controllers
         }
 
         // POST: api/Expense
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Expense>> PostExpense(Expense expense)
         {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Coursework.Models
 {
@@ -8,7 +9,7 @@ namespace Coursework.Models
         public int? ProjectId {get; set;}
         public int Amount {get; set;}
         public string ExpenseDate {get; set;}
-
+        [JsonIgnore]
         public Project? Project {get; set;}
 
     }

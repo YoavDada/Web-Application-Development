@@ -43,7 +43,6 @@ namespace Coursework.Controllers
         }
 
         // PUT: api/Employee/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployee(int id, Employee employee)
@@ -75,7 +74,6 @@ namespace Coursework.Controllers
         }
 
         // POST: api/Employee
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
