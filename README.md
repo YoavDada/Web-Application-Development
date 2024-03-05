@@ -15,7 +15,7 @@ This is a university project and only creates the backend service.
 
 All the files on GitHub are the necessary files to run the project however the JSON files are not provided so there will be errors if tried to run without them. 
 
-### Usage
+## Usage
 
 This code can be consumed using Swagger or Postman. Since this is just the backend there is no frontend presentation. However using Swagger or Postman it is possible to create modify and delete instances from the 5 tables listed above: Employee, Clients, Department, Projects and Expense.
 
@@ -23,14 +23,14 @@ Some of the tables are only accessible to admin roles such as the employee and t
 
 It is also possible to delete an account just by entereing the email adress. 
 
-#### Contribution
+## Contribution
 
 As mentionned before this is a univeristy project so contribution on this project is not expected.
 
-##### Contact
+## Contact
 
 Even if contribution is not wanted to this project, if there is a need to contact me about this project it is possible at the following email adress: yoav.nathan@outlook.com
 
-###### Versioning
+## Versioning
 
 This project has been version controlled using branches for new features that were added. After a feature was added and working properly the feature branched was merged to the developed branch. So and so on until the project was completed and the main branch was then modified.
