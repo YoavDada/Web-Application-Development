@@ -9,6 +9,7 @@ public class EmailService
  public EmailService(IOptions<EmailSettings> emailSettings)
  {
  _emailSettings = emailSettings.Value;
+ 
  }
  public void SendEmail(string toEmail, string subject, string body)
  {

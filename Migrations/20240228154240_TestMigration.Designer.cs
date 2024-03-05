@@ -15,6 +15,7 @@ namespace Coursework.Migrations
     partial class TestMigration
     {
         /// <inheritdoc />
+        /// 
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

@@ -19,6 +19,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/log.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
+
 WebApplication app = null;
 
 try
